@@ -20,7 +20,6 @@ public class CustomerService {
 
 	public CustomerService(RabbitTemplate rabbitTemplate) {
 		this.rabbitTemplate = rabbitTemplate;
-		this.rabbitTemplate.setExchange(CustomerServiceMqApplication.EXCHANGE_NAME);
 	}
 
 	public void createCustomer() {
