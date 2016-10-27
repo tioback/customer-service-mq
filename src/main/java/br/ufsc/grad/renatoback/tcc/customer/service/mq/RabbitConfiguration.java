@@ -30,9 +30,9 @@ public class RabbitConfiguration {
 	}
 
 	@Bean
-	FanoutExchange exchange() {
+	FanoutExchange exchange(AmqpAdmin amqpAdmin) {
 		FanoutExchange exchange = new FanoutExchange(EXCHANGE_NAME, false, false);
-		// admin.declareExchange(exchange);
+		amqpAdmin.declareExchange(exchange);
 		return exchange;
 	}
 
