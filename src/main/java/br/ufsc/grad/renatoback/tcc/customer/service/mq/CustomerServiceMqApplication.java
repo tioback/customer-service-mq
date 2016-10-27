@@ -5,6 +5,8 @@ import static java.lang.System.getenv;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.boot.SpringApplication;
@@ -14,6 +16,8 @@ import org.springframework.context.annotation.Profile;
 
 @SpringBootApplication
 public class CustomerServiceMqApplication {
+
+	private Log logger = LogFactory.getLog(CustomerServiceMqApplication.class);
 
 	public static final String EXCHANGE_NAME = "customer-creation.exchange";
 
@@ -30,6 +34,8 @@ public class CustomerServiceMqApplication {
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
+
+		logger.error("User AMQP config: " + ampqUrl);
 
 		final CachingConnectionFactory factory = new CachingConnectionFactory();
 		factory.setUsername(ampqUrl.getUserInfo().split(":")[0]);
