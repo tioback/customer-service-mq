@@ -4,6 +4,7 @@ import static br.ufsc.grad.renatoback.tcc.customer.service.mq.CustomerServiceMqA
 
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.FanoutExchange;
+import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -19,6 +20,9 @@ public class RabbitConfiguration {
 
 	@Bean
 	public AmqpAdmin amqpAdmin() {
+		((CachingConnectionFactory) connectionFactory).setPublisherConfirms(true);
+		((CachingConnectionFactory) connectionFactory).setChannelCacheSize(100);
+
 		return new RabbitAdmin(connectionFactory);
 	}
 
@@ -30,9 +34,8 @@ public class RabbitConfiguration {
 	}
 
 	@Bean
-	FanoutExchange exchange(AmqpAdmin amqpAdmin) {
+	public FanoutExchange exchange(AmqpAdmin amqpAdmin) {
 		FanoutExchange exchange = new FanoutExchange(EXCHANGE_NAME, false, false);
-		amqpAdmin.declareExchange(exchange);
 		return exchange;
 	}
 

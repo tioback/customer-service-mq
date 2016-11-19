@@ -27,7 +27,7 @@ public class CustomerServiceMqApplication {
 
 	@Profile("heroku")
 	@Bean(name = "connectionFactory")
-	public ConnectionFactory connectionFactory() {
+	public ConnectionFactory herokuConnectionFactory() {
 		final URI ampqUrl;
 		try {
 			ampqUrl = new URI(getEnvOrThrow("CLOUDAMQP_URL"));

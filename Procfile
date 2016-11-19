@@ -1,1 +1,1 @@
-web: java -Dspring.profiles.active=heroku -Dserver.port=$PORT -jar target/customer-service-mq*.jar
+web: java $JAVA_OPTS -Xmx512m -javaagent:target/lib/spring-instrument-4.3.4.RELEASE.jar -javaagent:target/lib/aspectjweaver-1.8.9.jar -Duser.timezone="America/Sao_Paulo" -Dspring.profiles.active=heroku -Dserver.port=$PORT -jar target/customer-service-mq*.jar
