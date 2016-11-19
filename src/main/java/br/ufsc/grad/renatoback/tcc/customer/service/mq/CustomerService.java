@@ -62,6 +62,8 @@ public class CustomerService {
 
 		ExecutorService executor;
 		for (int i = 0; i < repetitions; i++) {
+
+			amqpAdmin.deleteExchange(exchange.getName());
 			amqpAdmin.declareExchange(exchange);
 			int activeThreadsCount = Thread.activeCount();
 			executor = Executors.newFixedThreadPool(threads);
@@ -79,8 +81,6 @@ public class CustomerService {
 					sobra));
 
 			printStatistics(threads, sleep, recCounter.getAndSet(0), refCounter.getAndSet(0), average.getAndSet(0));
-
-			amqpAdmin.deleteExchange(exchange.getName());
 		}
 	}
 
