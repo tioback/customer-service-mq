@@ -21,7 +21,7 @@ public class Task implements Runnable {
 	@Override
 	public void run() {
 		while (System.nanoTime() - start < interval) {
-			service.createCustomer(correlationData);
+			service._createCustomer(correlationData);
 
 			try {
 				Thread.sleep(sleep);

@@ -34,7 +34,13 @@ public class CustomerService {
 		setUpConfirmation();
 	}
 
-	public void createCustomer(CorrelationData correlationData) {
+	public void createCustomer() {
+		resetExchange();
+		currentCorrelationData = new CorrelationData("1-0-0");
+		_createCustomer(currentCorrelationData);
+	}
+
+	public void _createCustomer(CorrelationData correlationData) {
 		_doProcessing();
 
 		signalUserCreation(counter.incrementAndGet(), correlationData);
@@ -63,8 +69,8 @@ public class CustomerService {
 		ExecutorService executor;
 		for (int i = 0; i < repetitions; i++) {
 
-			amqpAdmin.deleteExchange(exchange.getName());
-			amqpAdmin.declareExchange(exchange);
+			resetExchange();
+
 			int activeThreadsCount = Thread.activeCount();
 			executor = Executors.newFixedThreadPool(threads);
 
@@ -84,8 +90,16 @@ public class CustomerService {
 		}
 	}
 
+	private void resetExchange() {
+		amqpAdmin.deleteExchange(exchange.getName());
+		amqpAdmin.declareExchange(exchange);
+	}
+
 	private void setUpConfirmation() {
 		rabbitTemplate.setConfirmCallback((receivedCorrelationData, ack, cause) -> {
+			if (currentCorrelationData == null) {
+				return;
+			}
 			if (currentCorrelationData.getId().equals(receivedCorrelationData.getId())) {
 				average.accumulateAndGet(System.nanoTime() - currentStart,
 						(n, m) -> (n + m) / (n == 0 || m == 0 ? 1 : 2));

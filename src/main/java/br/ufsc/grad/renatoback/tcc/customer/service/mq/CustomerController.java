@@ -1,6 +1,5 @@
 package br.ufsc.grad.renatoback.tcc.customer.service.mq;
 
-import org.springframework.amqp.rabbit.support.CorrelationData;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -20,7 +19,7 @@ public class CustomerController {
 	@RequestMapping(method = RequestMethod.POST)
 	@ResponseStatus(code = HttpStatus.CREATED)
 	public void createCustomer() {
-		service.createCustomer(new CorrelationData("1-0-0"));
+		service.createCustomer();
 	}
 
 	/**
