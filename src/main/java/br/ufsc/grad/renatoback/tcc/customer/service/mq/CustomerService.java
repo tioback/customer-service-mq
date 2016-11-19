@@ -86,6 +86,9 @@ public class CustomerService {
 
 	private void setUpConfirmation() {
 		rabbitTemplate.setConfirmCallback((receivedCorrelationData, ack, cause) -> {
+			if (currentCorrelationData == null) {
+				return;
+			}
 			if (currentCorrelationData.getId().equals(receivedCorrelationData.getId())) {
 				average.accumulateAndGet(System.nanoTime() - currentStart,
 						(n, m) -> (n + m) / (n == 0 || m == 0 ? 1 : 2));
