@@ -31,7 +31,7 @@ public class CustomerServiceMqApplication {
 		final URI ampqUrl;
 		try {
 			// ampqUrl = new URI(getEnvOrThrow("CLOUDAMQP_URL"));
-			ampqUrl = new URI("amqp://srziqxaq:RM1Zqb-Va8CISH0a1Zwn_5t0MzZgFwMG@buck.rmq.cloudamqp.com/srziqxaq");
+			ampqUrl = new URI("amqp://rmcokgtw:PL6Cs58f9fnWzcIb2uGed-aTx3G5cPaE@buck.rmq.cloudamqp.com/rmcokgtw");
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
