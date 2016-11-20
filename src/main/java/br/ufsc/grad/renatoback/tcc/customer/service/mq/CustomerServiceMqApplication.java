@@ -30,7 +30,8 @@ public class CustomerServiceMqApplication {
 	public ConnectionFactory herokuConnectionFactory() {
 		final URI ampqUrl;
 		try {
-			ampqUrl = new URI(getEnvOrThrow("CLOUDAMQP_URL"));
+			// ampqUrl = new URI(getEnvOrThrow("CLOUDAMQP_URL"));
+			ampqUrl = new URI("amqp://ekrcmbpx:9e61drzXZ0r0lUKZ8HINaFM3lg2ZKRnX@buck.rmq.cloudamqp.com/ekrcmbpx");
 		} catch (URISyntaxException e) {
 			throw new RuntimeException(e);
 		}
