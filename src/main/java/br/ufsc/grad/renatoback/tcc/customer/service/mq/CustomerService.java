@@ -26,6 +26,13 @@ public class CustomerService {
 
 	private AtomicInteger counter = new AtomicInteger();
 
+	private AtomicInteger recCounter = new AtomicInteger();
+	private AtomicInteger refCounter = new AtomicInteger();
+	private AtomicLong average = new AtomicLong();
+
+	private String currentCorrelationDataKey;
+	private long currentStart;
+
 	public CustomerService(RabbitTemplate rabbitTemplate, AmqpAdmin amqpAdmin, FanoutExchange exchange) {
 		this.rabbitTemplate = rabbitTemplate;
 		this.amqpAdmin = amqpAdmin;
@@ -36,8 +43,7 @@ public class CustomerService {
 
 	public void createCustomer() {
 		resetExchange();
-		currentCorrelationData = new CorrelationData("1-0-0");
-		_createCustomer(currentCorrelationData);
+		_createCustomer(new CorrelationData("1-0-0-0"));
 	}
 
 	public void _createCustomer(CorrelationData correlationData) {
@@ -54,13 +60,6 @@ public class CustomerService {
 		rabbitTemplate.correlationConvertAndSend(String.valueOf(userId), correlationData);
 	}
 
-	AtomicInteger recCounter = new AtomicInteger();
-	AtomicInteger refCounter = new AtomicInteger();
-	AtomicLong average = new AtomicLong();
-
-	private CorrelationData currentCorrelationData;
-	private long currentStart;
-
 	public void createCustomer(int repetitions, int interval_seg, int threads, int sleep) {
 		// BEGIN CONFIG
 		final long interval_nano = TimeUnit.SECONDS.toNanos(interval_seg);
@@ -75,11 +74,10 @@ public class CustomerService {
 			executor = Executors.newFixedThreadPool(threads);
 
 			currentStart = System.nanoTime();
-			currentCorrelationData = new CorrelationData(String.format("%d-%d-%d", i, threads, sleep));
+			currentCorrelationDataKey = String.format("%d-%d-%d", i, threads, sleep);
 
 			for (int j = 0; j < threads; j++) {
-				executor.execute(new Task(this, currentStart, interval_nano, sleep,
-						new CorrelationData(String.format("%d-%d-%d", i, threads, sleep))));
+				executor.execute(new Task(this, currentStart, interval_nano, sleep, i, threads));
 			}
 			int sobra = stopExecutor(interval_seg, executor);
 
@@ -97,11 +95,14 @@ public class CustomerService {
 
 	private void setUpConfirmation() {
 		rabbitTemplate.setConfirmCallback((receivedCorrelationData, ack, cause) -> {
-			if (currentCorrelationData == null) {
+			if (currentCorrelationDataKey == null) {
 				return;
 			}
-			if (currentCorrelationData.getId().equals(receivedCorrelationData.getId())) {
-				average.accumulateAndGet(System.nanoTime() - currentStart,
+
+			String[] parts = receivedCorrelationData.getId().split("-");
+
+			if (currentCorrelationDataKey.equals(String.format("%s-%s-%s", parts[0], parts[1], parts[2]))) {
+				average.accumulateAndGet(System.nanoTime() - Long.parseLong(parts[3]),
 						(n, m) -> (n + m) / (n == 0 || m == 0 ? 1 : 2));
 				recCounter.incrementAndGet();
 			} else {
@@ -131,6 +132,13 @@ public class CustomerService {
 	public void createCustomer(int repetitions, int interval, int threads, int start, int increment, int end) {
 		for (int i = start; i <= end; i = i + increment) {
 			createCustomer(repetitions, interval, threads, i);
+		}
+	}
+
+	public void createCustomer(int repetitions, int interval, int threadStart, int threadIncrement, int threadEnd,
+			int sleepStart, int sleepIncrement, int sleepEnd) {
+		for (int i = threadStart; i <= threadEnd; i = i + threadIncrement) {
+			createCustomer(repetitions, interval, i, sleepStart, sleepIncrement, sleepEnd);
 		}
 	}
 

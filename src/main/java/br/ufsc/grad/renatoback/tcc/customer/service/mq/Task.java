@@ -8,20 +8,23 @@ public class Task implements Runnable {
 	private final Long start;
 	private final Long interval;
 	private final Integer sleep;
-	private final CorrelationData correlationData;
+	private final Integer iteration;
+	private final Integer threads;
 
-	public Task(CustomerService service, Long start, Long interval, Integer sleep, CorrelationData correlationData) {
+	public Task(CustomerService service, Long start, Long interval, Integer sleep, Integer iteration, Integer threads) {
 		this.service = service;
 		this.start = start;
 		this.interval = interval;
 		this.sleep = sleep;
-		this.correlationData = correlationData;
+		this.iteration = iteration;
+		this.threads = threads;
 	}
 
 	@Override
 	public void run() {
-		while (System.nanoTime() - start < interval) {
-			service._createCustomer(correlationData);
+		long now;
+		while ((now = System.nanoTime()) - start < interval) {
+			service._createCustomer(new CorrelationData(String.format("%d-%d-%d-%d", iteration, threads, sleep, now)));
 
 			try {
 				Thread.sleep(sleep);

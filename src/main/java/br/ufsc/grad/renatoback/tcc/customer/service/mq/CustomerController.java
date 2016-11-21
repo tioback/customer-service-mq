@@ -60,4 +60,27 @@ public class CustomerController {
 		service.createCustomer(repetitions, interval, threads, start, increment, end);
 	}
 
+	/**
+	 * Exemplo: GET /50/30/2/25 50 repetições por 30 segundos de intervalo
+	 * executar 2 threads com 25 milisegundos de sleep
+	 * 
+	 * @param repetitions
+	 * @param interval
+	 * @param threads
+	 * @param sleep
+	 */
+	@RequestMapping(path = "/{repetitions}/{interval}/{threadStart}/{threadIncrement}/{threadEnd}/{sleepStart}/{sleepIncrement}/{sleepEnd}", method = RequestMethod.GET)
+	@ResponseStatus(code = HttpStatus.OK)
+	public void createCustomer(@PathVariable(required = true, name = "repetitions") int repetitions,
+			@PathVariable(required = true, name = "interval") int interval,
+			@PathVariable(required = true, name = "threadStart") int threadStart,
+			@PathVariable(required = true, name = "threadIncrement") int threadIncrement,
+			@PathVariable(required = true, name = "threadEnd") int threadEnd,
+			@PathVariable(required = true, name = "sleepStart") int sleepStart,
+			@PathVariable(required = true, name = "sleepIncrement") int sleepIncrement,
+			@PathVariable(required = true, name = "sleepEnd") int sleepEnd) {
+		service.createCustomer(repetitions, interval, threadStart, threadIncrement, threadEnd, sleepStart,
+				sleepIncrement, sleepEnd);
+	}
+
 }
